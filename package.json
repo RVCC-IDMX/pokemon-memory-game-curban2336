@@ -23,7 +23,7 @@
     "html",
     "pokeapi"
   ],
-  "author": "Your Name",
+  "author": "Christopher Urban",
   "license": "MIT",
   "devDependencies": {
     "@vitejs/plugin-legacy": "^6.0.2",
@@ -36,10 +36,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-username/pokemon-card-flip.git"
+    "url": "git+https://github.com/curban2336/pokemon-card-flip.git"
   },
   "bugs": {
-    "url": "https://github.com/your-username/pokemon-card-flip/issues"
+    "url": "https://github.com/curban2336/pokemon-card-flip/issues"
   },
-  "homepage": "https://github.com/your-username/pokemon-card-flip#readme"
+  "homepage": "https://github.com/curban2336/pokemon-card-flip#readme"
 }

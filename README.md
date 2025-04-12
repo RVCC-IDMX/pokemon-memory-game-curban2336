@@ -19,7 +19,7 @@ Built using vanilla JavaScript with ES Modules, HTML5, and CSS3, this game fetch
 
 <!-- ## 🚀 Live Demo
 
-Check out the live demo: [Pokémon Memory Game](https://your-pokemon-memory-game-url.netlify.app) -->
+Check out the live demo: [Pokémon Memory Game](https://curban-pokemon-memory-game.netlify.app) -->
 
 ## 🛠️ Technologies Used
 
