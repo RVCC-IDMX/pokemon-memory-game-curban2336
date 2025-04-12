@@ -319,7 +319,11 @@ function handleMatch() {
   secondSelectedCard.classList.add('matched');
 
   // Note pair was matched
-  matchedPairsCount++;
+  ++matchedPairsCount;
+
+  if (matchedPairsCount === totalPairs) {
+    setTimeout(showGameComplete(), 500);
+  }
 
   resetSelection();
 }
@@ -345,6 +349,28 @@ function resetSelection() {
   firstSelectedCard = null;
   secondSelectedCard = null;
   isProcessingPair = false;
+}
+
+function showGameComplete() {
+  const messageContainer = document.createElement('div');
+  messageContainer.classList.add('completion-message');
+
+  messageContainer.innerHTML = messageContainer.innerHTML =
+    // eslint-disable-next-line max-len, quotes
+    `<h1>Congratulations!</h1><p><br>You found all the Pokémon pairs!<br></p><button id='play-again' type='button'>Play Again</button>`;
+
+  document.querySelector('.container').appendChild(messageContainer);
+
+  document.getElementById('play-again').addEventListener('click', () => {
+    messageContainer.remove();
+    resetGame();
+  });
+}
+
+function resetGame() {
+  resetSelection();
+  matchedPairsCount = 0;
+  initApp();
 }
 
 /**
