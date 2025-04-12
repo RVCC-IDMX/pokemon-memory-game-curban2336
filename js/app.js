@@ -19,6 +19,12 @@ let cards = [];
 const DEBUG_SHOW_SPINNER = false;
 const LOADING_DELAY = 4000; // 2 seconds delay
 
+//Tracks first and second selected card for processing
+let firstSelectedCard = null;
+let secondSelectedCard = null;
+// Prevents interaction during card processing
+let isProcessingPair = false;
+
 /**
  * Initialize the application
  *
@@ -246,17 +252,35 @@ function assignPokemonToCard(card, pokemon) {
  */
 function handleCardClick(event) {
   // Find the clicked card
-  let card = event.target;
-  while (card && !card.classList.contains('card')) {
-    card = card.parentElement;
-  }
+  const card = event.target.closest('.card');
 
   if (!card) {
     return;
   }
 
+  while (card && !card.classList.contains('card')) {
+    card = card.parentElement;
+  }
+
+  if (card.classList.contains('flipped') || card.classList.contains('matched')) {
+    return;
+  }
+
+  if (isProcessingPair) {
+    return;
+  }
+
   // Toggle card flip
   card.classList.toggle('flipped');
+  if (firstSelectedCard) {
+    secondSelectedCard = card;
+  } else if (!firstSelectedCard) {
+    firstSelectedCard = card;
+  }
+
+  if (firstSelectedCard && secondSelectedCard) {
+    isProcessingPair = true;
+  }
 }
 
 /**
