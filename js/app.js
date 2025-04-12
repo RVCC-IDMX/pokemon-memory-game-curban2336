@@ -25,6 +25,10 @@ let secondSelectedCard = null;
 // Prevents interaction during card processing
 let isProcessingPair = false;
 
+//Track progress
+let matchedPairsCount = 0;
+const totalPairs = 6;
+
 /**
  * Initialize the application
  *
@@ -262,11 +266,8 @@ function handleCardClick(event) {
     card = card.parentElement;
   }
 
-  if (card.classList.contains('flipped') || card.classList.contains('matched')) {
-    return;
-  }
-
-  if (isProcessingPair) {
+  // eslint-disable-next-line max-len
+  if (card.classList.contains('flipped') || card.classList.contains('matched') || isProcessingPair) {
     return;
   }
 
@@ -280,7 +281,70 @@ function handleCardClick(event) {
 
   if (firstSelectedCard && secondSelectedCard) {
     isProcessingPair = true;
+    checkForMatch();
   }
+}
+
+function checkForMatch() {
+  // Get Pokémon data from both cards
+  let firstPokemonData, secondPokemonData;
+
+  try {
+    firstPokemonData = JSON.parse(firstSelectedCard.dataset.pokemon);
+    secondPokemonData = JSON.parse(secondSelectedCard.dataset.pokemon);
+  } catch (error) {
+    console.error('Error parsing Pokémon data:', error);
+    resetSelection();
+    return;
+  }
+
+  // Guard clause if either data is missing
+  if (!firstPokemonData || !secondPokemonData) {
+    console.error('Missing Pokémon data');
+    resetSelection();
+    return;
+  }
+
+  // Use a constant time comparison with strict equality
+  if (firstPokemonData.id === secondPokemonData.id) {
+    handleMatch();
+  } else {
+    handleNonMatch();
+  }
+}
+
+function handleMatch() {
+  // Mark cards as matched
+  firstSelectedCard.classList.add('matched');
+  secondSelectedCard.classList.add('matched');
+
+  // Note pair was matched
+  matchedPairsCount++;
+
+  resetSelection();
+}
+
+function handleNonMatch() {
+  // Use a promise with setTimeout for better async handling
+  return new Promise(resolve => {
+    setTimeout(() => {
+      // Flip cards back over
+      firstSelectedCard.classList.remove('flipped');
+      secondSelectedCard.classList.remove('flipped');
+
+      // Reset selection
+      resetSelection();
+
+      resolve();
+    }, 1000);
+  });
+}
+
+function resetSelection() {
+  // reset card selections
+  firstSelectedCard = null;
+  secondSelectedCard = null;
+  isProcessingPair = false;
 }
 
 /**
