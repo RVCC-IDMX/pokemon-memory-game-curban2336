@@ -122,7 +122,7 @@ function createCardElement(index) {
  */
 async function fetchAndAssignPokemon() {
   try {
-    // Fetch multiple random Pokemon
+    // Fetch multiple random Pokemon and shuffle the array
     const pokemonList = await PokemonService.fetchMultipleRandomPokemon(6);
 
     const pokemonPairs = pokemonList.flatMap((card) => (card = [card, card]));
@@ -134,10 +134,7 @@ async function fetchAndAssignPokemon() {
       await new Promise(resolve => setTimeout(resolve, LOADING_DELAY));
     }
 
-    // Assign Pokemon to cards
-    // for (let i = 0; i < CARD_COUNT; i++) {
-    //   assignPokemonToCard(cards[i], pokemonList[i]);
-    // }
+    //assign shuffled pokemon to the cards
     for (let i = 0; i < Math.min(CARD_COUNT, shuffledPairs.length); i++) {
       if (cards[i] && shuffledPairs[i]) {
         assignPokemonToCard(cards[i], shuffledPairs[i]);
@@ -258,10 +255,12 @@ function handleCardClick(event) {
   // Find the clicked card
   const card = event.target.closest('.card');
 
+  //guard against empty card call
   if (!card) {
     return;
   }
 
+  //properly assign card with correct element
   while (card && !card.classList.contains('card')) {
     card = card.parentElement;
   }
@@ -271,7 +270,7 @@ function handleCardClick(event) {
     return;
   }
 
-  // Toggle card flip
+  // Toggle card flip, assign selected card to variable for checking
   card.classList.toggle('flipped');
   if (firstSelectedCard) {
     secondSelectedCard = card;
@@ -279,16 +278,21 @@ function handleCardClick(event) {
     firstSelectedCard = card;
   }
 
+  //if both cards are selected, run check for matching pair
   if (firstSelectedCard && secondSelectedCard) {
     isProcessingPair = true;
     checkForMatch();
   }
 }
 
+/**
+ * Checks selected cards for a match
+ */
 function checkForMatch() {
   // Get Pokémon data from both cards
   let firstPokemonData, secondPokemonData;
 
+  //parse the data for easy access
   try {
     firstPokemonData = JSON.parse(firstSelectedCard.dataset.pokemon);
     secondPokemonData = JSON.parse(secondSelectedCard.dataset.pokemon);
@@ -313,6 +317,10 @@ function checkForMatch() {
   }
 }
 
+/**
+ * If match, mark them, increment current matched pairs, and reset
+ * If all pairs matched, activate game end state
+ */
 function handleMatch() {
   // Mark cards as matched
   firstSelectedCard.classList.add('matched');
@@ -321,6 +329,7 @@ function handleMatch() {
   // Note pair was matched
   ++matchedPairsCount;
 
+  //if all pairs found, end the game
   if (matchedPairsCount === totalPairs) {
     setTimeout(showGameComplete(), 500);
   }
@@ -328,6 +337,9 @@ function handleMatch() {
   resetSelection();
 }
 
+/**
+ * If not match, flip selected cards back over and reset selection
+ */
 function handleNonMatch() {
   // Use a promise with setTimeout for better async handling
   return new Promise(resolve => {
@@ -336,7 +348,6 @@ function handleNonMatch() {
       firstSelectedCard.classList.remove('flipped');
       secondSelectedCard.classList.remove('flipped');
 
-      // Reset selection
       resetSelection();
 
       resolve();
@@ -344,6 +355,9 @@ function handleNonMatch() {
   });
 }
 
+/**
+ * Reset the selection tracking
+ */
 function resetSelection() {
   // reset card selections
   firstSelectedCard = null;
@@ -351,22 +365,32 @@ function resetSelection() {
   isProcessingPair = false;
 }
 
+/**
+ * Add end game screen and option for replay
+ */
 function showGameComplete() {
+  //make HTML element to hold screen
   const messageContainer = document.createElement('div');
   messageContainer.classList.add('completion-message');
 
+  //add content to messageContainer
   messageContainer.innerHTML = messageContainer.innerHTML =
     // eslint-disable-next-line max-len, quotes
     `<h1>Congratulations!</h1><p><br>You found all the Pokémon pairs!<br></p><button id='play-again' type='button'>Play Again</button>`;
 
+  //add messageContainer to the page
   document.querySelector('.container').appendChild(messageContainer);
 
+  //add function to play again button to reset the game
   document.getElementById('play-again').addEventListener('click', () => {
     messageContainer.remove();
     resetGame();
   });
 }
 
+/**
+ * resets variables and re-initializes the card grid
+*/
 function resetGame() {
   resetSelection();
   matchedPairsCount = 0;
