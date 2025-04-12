@@ -1,3 +1,4 @@
+/* eslint-disable linebreak-style */
 /**
  * Main Application Logic - Simplified Version
  * This file contains the main functionality for the Pokemon Card Flip App
@@ -112,7 +113,11 @@ function createCardElement(index) {
 async function fetchAndAssignPokemon() {
   try {
     // Fetch multiple random Pokemon
-    const pokemonList = await PokemonService.fetchMultipleRandomPokemon(CARD_COUNT);
+    const pokemonList = await PokemonService.fetchMultipleRandomPokemon(6);
+
+    const pokemonPairs = pokemonList.flatMap((card) => (card = [card, card]));
+
+    const shuffledPairs = shuffleArray(pokemonPairs);
 
     // If debug flag is on, add artificial delay to show the spinner
     if (DEBUG_SHOW_SPINNER) {
@@ -120,12 +125,41 @@ async function fetchAndAssignPokemon() {
     }
 
     // Assign Pokemon to cards
-    for (let i = 0; i < CARD_COUNT; i++) {
-      assignPokemonToCard(cards[i], pokemonList[i]);
+    // for (let i = 0; i < CARD_COUNT; i++) {
+    //   assignPokemonToCard(cards[i], pokemonList[i]);
+    // }
+    for (let i = 0; i < Math.min(CARD_COUNT, shuffledPairs.length); i++) {
+      if (cards[i] && shuffledPairs[i]) {
+        assignPokemonToCard(cards[i], shuffledPairs[i]);
+      }
     }
   } catch (error) {
     console.error('Error fetching and assigning Pokemon:', error);
+    // eslint-disable-next-line no-undef
+    showErrorMessage('Failed to load Pokémon. Please try refreshing the page.');
   }
+}
+
+/**
+ * Shuffles array using Fisher-Yates
+ * @param {Array} array - the array to shuffle
+ * @returns {Array} the shuffled array
+ */
+function shuffleArray(array) {
+  // Create a copy of the array
+  // eslint-disable-next-line no-undef
+  const arrayCopy = structuredClone(array);
+
+  // Fisher-Yates algorithm
+  for (let i = arrayCopy.length - 1; i > 0; i--) {
+    // Pick a random element from 0 to i
+    const j = Math.floor(Math.random() * (i + 1));
+
+    // Swap elements i and j
+    [arrayCopy[i], arrayCopy[j]] = [arrayCopy[j], arrayCopy[i]];
+  }
+
+  return arrayCopy;
 }
 
 /**
